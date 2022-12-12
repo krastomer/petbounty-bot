@@ -1,11 +1,10 @@
-FROM eclipse-temurin:17-jdk-jammy
+FROM python:3.8-slim-buster
 
 WORKDIR /app
 
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN ./mvnw dependency:resolve
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
 
-COPY src ./src
+COPY . .
 
-CMD ["./mvnw", "spring-boot:run"]
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
