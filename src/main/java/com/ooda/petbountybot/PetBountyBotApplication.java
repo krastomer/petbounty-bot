@@ -1,5 +1,6 @@
 package com.ooda.petbountybot;
 
+import com.linecorp.bot.model.event.Event;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.linecorp.bot.model.message.Message;
@@ -18,9 +19,13 @@ public class PetBountyBotApplication {
     }
 
     @EventMapping
-    public Message handleTextMessage(MessageEvent<TextMessageContent> e) {
-        System.out.println("event: " + e);
-        TextMessageContent message = e.getMessage();
-        return new TextMessage(message.getText());
+    public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
+        System.out.println("event: " + event);
+        return new TextMessage(event.getMessage().getText());
+    }
+
+    @EventMapping
+    public void handleDefaultMessageEvent(Event event) {
+        System.out.println("event: " + event);
     }
 }
