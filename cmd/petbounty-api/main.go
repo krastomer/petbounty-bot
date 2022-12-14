@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
-	secret := "awZJHEob/3reaim0dW+QoOB7c6HWx+lSVJ6ghZQ4Cre/p1oS6vTW4ghLE+g0vH6o979YWi/CXZ3Ibs09G3BQFWUKLKLqI9R3vFpjam3PpEXWPqrWfpXE1AhKZz1Gbb69plzywOiOAZL4IAmWChwbIgdB04t89/1O/w1cDnyilFU="
-	token := "28b1e02cb20c19dd1e7376564338816b"
+	token := "awZJHEob/3reaim0dW+QoOB7c6HWx+lSVJ6ghZQ4Cre/p1oS6vTW4ghLE+g0vH6o979YWi/CXZ3Ibs09G3BQFWUKLKLqI9R3vFpjam3PpEXWPqrWfpXE1AhKZz1Gbb69plzywOiOAZL4IAmWChwbIgdB04t89/1O/w1cDnyilFU="
+	secret := "28b1e02cb20c19dd1e7376564338816b"
 	bot, err := linebot.New(secret, token)
 	if err != nil {
 		panic(err)
