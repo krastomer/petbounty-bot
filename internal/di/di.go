@@ -6,7 +6,7 @@ import (
 )
 
 func InitializeContainer() *Container {
-	srv := gin.Default()
+	srv := gin.New()
 
 	handlers := handlers.InitializeHandlers()
 	handlers.RegisterRouter(srv)

@@ -3,10 +3,14 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/krastomer/petbounty-bot/internal/bot"
+	"github.com/krastomer/petbounty-bot/internal/logger"
 	"github.com/line/line-bot-sdk-go/v7/linebot"
+
+	ginzap "github.com/gin-contrib/zap"
 )
 
 type Handlers interface {
@@ -20,6 +24,9 @@ func InitializeHandlers() Handlers {
 }
 
 func (h *handlers) RegisterRouter(srv *gin.Engine) {
+	srv.Use(ginzap.Ginzap(logger.Logger, time.RFC3339, true))
+	srv.Use(ginzap.RecoveryWithZap(logger.Logger, true))
+
 	apiV1Group := srv.Group("/api/v1")
 
 	apiV1Group.POST("/callback", h.callback)
