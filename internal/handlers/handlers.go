@@ -46,19 +46,15 @@ func (h *handlers) callback(ctx *gin.Context) {
 	}
 
 	for _, event := range events {
-		if event.Type == linebot.EventTypeMessage {
-			quickReply := linebot.NewQuickReplyItems(
-				linebot.NewQuickReplyButton("HEHE", nil),
-			)
-			switch message := event.Message.(type) {
-			case *linebot.TextMessage:
-				response := bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text).WithQuickReplies(quickReply))
-				if _, err := response.Do(); err != nil {
-					fmt.Println("hehe")
-				}
-			default:
-				fmt.Println("hehe")
-			}
+		quickReply := linebot.NewQuickReplyItems(
+			linebot.NewQuickReplyButton("", &linebot.MessageAction{
+				Label: "HEHE",
+				Text:  "hehe",
+			}),
+		)
+		response := bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("open quick reply").WithQuickReplies(quickReply))
+		if _, err := response.Do(); err != nil {
+			fmt.Println("hehe")
 		}
 	}
 }
