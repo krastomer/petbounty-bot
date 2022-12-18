@@ -17,7 +17,9 @@ type Handlers interface {
 	RegisterRouter(srv *gin.Engine)
 }
 
-type handlers struct{}
+type handlers struct {
+	// commandService
+}
 
 func InitializeHandlers() Handlers {
 	return &handlers{}
@@ -45,9 +47,14 @@ func (h *handlers) callback(ctx *gin.Context) {
 
 	for _, event := range events {
 		if event.Type == linebot.EventTypeMessage {
+			quickReply := linebot.NewQuickReplyItems(
+				linebot.NewQuickReplyButton("HEHE", nil),
+			)
+			bot.BotInstance.ReplyMessage(event.ReplyToken)
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				if _, err := bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
+				response := bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text), message.WithQuickReplies(quickReply))
+				if _, err := response.Do(); err != nil {
 					fmt.Println("hehe")
 				}
 			default:
