@@ -6,7 +6,11 @@ import (
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 )
 
-var BotInstance *linebot.Client
+type bot struct {
+	*linebot.Client
+}
+
+var botInstance *bot
 
 func InitializeBot() {
 	token := os.Getenv("BOT_CHANNEL_TOKEN")
@@ -16,5 +20,9 @@ func InitializeBot() {
 		panic(err)
 	}
 
-	BotInstance = client
+	botInstance = &bot{client}
+}
+
+func GetInstance() *bot {
+	return botInstance
 }

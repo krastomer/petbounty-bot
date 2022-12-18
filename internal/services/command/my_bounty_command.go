@@ -30,7 +30,7 @@ func (c *MyBountyCommand) Execute(ctx context.Context, event *linebot.Event) err
 	}
 
 	if len(bounties) == 0 {
-		_, err := bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("You never register bounty.")).Do()
+		_, err := bot.GetInstance().ReplyMessage(event.ReplyToken, linebot.NewTextMessage("You never register bounty.")).Do()
 		return err
 	}
 
@@ -40,6 +40,6 @@ func (c *MyBountyCommand) Execute(ctx context.Context, event *linebot.Event) err
 	}
 
 	carousel := linebot.NewFlexMessage("test", &linebot.CarouselContainer{Contents: contents})
-	_, err = bot.BotInstance.ReplyMessage(event.ReplyToken, carousel).Do()
+	_, err = bot.GetInstance().ReplyMessage(event.ReplyToken, carousel).Do()
 	return err
 }

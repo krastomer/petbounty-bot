@@ -57,11 +57,11 @@ func (c *CreateBountyCommand) Execute(ctx context.Context, event *linebot.Event)
 		if err != nil {
 			return err
 		}
-		_, err = bot.BotInstance.BroadcastMessage(linebot.NewTextMessage("แมวบักเจดหาย")).Do()
+		_, err = bot.GetInstance().BroadcastMessage(linebot.NewTextMessage("แมวบักเจดหาย")).Do()
 		return err
 	}
 
-	_, err := bot.BotInstance.ReplyMessage(
+	_, err := bot.GetInstance().ReplyMessage(
 		event.ReplyToken,
 		linebot.NewTextMessage("Please Fill you're pet information\nCopy Next Message and fill"),
 		linebot.NewTextMessage("Name: \nReward: \nDetail: \nAddress: \nTelephone: "),

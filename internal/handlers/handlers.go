@@ -30,7 +30,7 @@ func (h *handlers) RegisterRouter(srv *gin.Engine) {
 }
 
 func (h *handlers) callback(ctx *gin.Context) {
-	events, err := bot.BotInstance.ParseRequest(ctx.Request)
+	events, err := bot.GetInstance().ParseRequest(ctx.Request)
 	if err != nil {
 		if err == linebot.ErrInvalidSignature {
 			ctx.Status(http.StatusBadRequest)

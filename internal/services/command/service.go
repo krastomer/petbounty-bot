@@ -56,8 +56,8 @@ func (s *service) Execute(ctx context.Context, event *linebot.Event) {
 	}
 
 	if val, ok := s.previousState[event.Source.UserID]; ok {
-		if val == "Create Bounty" {
-			command := s.commands["Create Bounty"]
+		if val == CreateBountyName {
+			command := s.commands[CreateBountyName]
 			ctx = context.WithValue(ctx, CreateBountyContext{}, true)
 			command.Execute(ctx, event)
 			s.previousState[event.Source.UserID] = "Created Bounty"
@@ -67,7 +67,10 @@ func (s *service) Execute(ctx context.Context, event *linebot.Event) {
 
 	command := s.commands[text.Text]
 	if command == nil {
-		bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("I don't understand what you say. Please type again").WithQuickReplies(&s.errQuickReplyItems)).Do()
+		_, err := bot.GetInstance().ReplyMessage(event.ReplyToken, linebot.NewTextMessage("I don't understand what you say. Please type again").WithQuickReplies(&s.errQuickReplyItems)).Do()
+		if err != nil {
+			fmt.Println(err)
+		}
 		return
 	}
 
