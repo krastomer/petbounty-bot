@@ -53,7 +53,7 @@ func (h *handlers) callback(ctx *gin.Context) {
 			bot.BotInstance.ReplyMessage(event.ReplyToken)
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				response := bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text), message.WithQuickReplies(quickReply))
+				response := bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text).WithQuickReplies(quickReply))
 				if _, err := response.Do(); err != nil {
 					fmt.Println("hehe")
 				}
