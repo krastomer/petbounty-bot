@@ -45,3 +45,7 @@ func replyMessageWithQuickReply(replyToken string, message ...linebot.SendingMes
 	_, err := botInstance.ReplyMessage(replyToken, message...).Do()
 	return err
 }
+
+func ReplyErrorMessage(replyToken string) error {
+	return ReplyMessageWithText(replyToken, "I don't understand what you say. Please try again")
+}

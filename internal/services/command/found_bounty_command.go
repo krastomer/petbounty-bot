@@ -2,9 +2,9 @@ package command
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
+	"github.com/krastomer/petbounty-bot/internal/bot"
 	"github.com/krastomer/petbounty-bot/internal/repositories/bounty"
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 )
@@ -26,6 +26,10 @@ func (c *FoundBountyCommand) Name() string {
 
 func (c *FoundBountyCommand) Execute(ctx context.Context, event *linebot.Event) error {
 	id := strings.Split(event.Postback.Data, "=")[1]
-	fmt.Println(event.Postback.Data)
-	return c.bountyRepo.UpdateStatusBountyByID(ctx, id, bounty.Founded)
+	err := c.bountyRepo.UpdateStatusBountyByID(ctx, id, bounty.Founded)
+	if err != nil {
+		return err
+	}
+
+	return bot.ReplyMessageWithText(event.ReplyToken, "Update Status: Founded")
 }

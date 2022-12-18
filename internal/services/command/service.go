@@ -70,7 +70,11 @@ func (s *service) hitTextMessage(ctx context.Context, event *linebot.Event) {
 		if val == CreateBountyName {
 			command := s.commands[CreateBountyName]
 			ctx = context.WithValue(ctx, CreateBountyContext{}, true)
-			command.Execute(ctx, event)
+			err := command.Execute(ctx, event)
+			if err != nil {
+				bot.ReplyErrorMessage(event.ReplyToken)
+			}
+
 			s.previousState[event.Source.UserID] = "Created Bounty"
 			return
 		}
@@ -78,10 +82,7 @@ func (s *service) hitTextMessage(ctx context.Context, event *linebot.Event) {
 
 	command := s.commands[text.Text]
 	if command == nil {
-		err := bot.ReplyMessageWithText(event.ReplyToken, "I don't understand what you say. Please try again")
-		if err != nil {
-			fmt.Println(err)
-		}
+		bot.ReplyErrorMessage(event.ReplyToken)
 		return
 	}
 
@@ -98,10 +99,7 @@ func (s *service) hitPostback(ctx context.Context, event *linebot.Event) {
 	command := s.postbacks[postback]
 
 	if command == nil {
-		err := bot.ReplyMessageWithText(event.ReplyToken, "I don't understand what you say. Please try again")
-		if err != nil {
-			fmt.Println(err)
-		}
+		bot.ReplyErrorMessage(event.ReplyToken)
 		return
 	}
 

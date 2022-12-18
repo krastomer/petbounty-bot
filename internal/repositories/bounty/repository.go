@@ -72,7 +72,10 @@ func (r *repository) UpdateStatusBountyByID(ctx context.Context, id string, stat
 		return err
 	}
 
-	update := bson.D{{"$set", bson.D{{"status", status}}}}
+	update := bson.M{}
+	update["$set"] = bson.M{
+		"status": status,
+	}
 	_, err = r.collection.UpdateByID(ctx, primitiveID, update)
 	fmt.Println("hit")
 	fmt.Println(err)
