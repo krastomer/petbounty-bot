@@ -50,7 +50,6 @@ func (h *handlers) callback(ctx *gin.Context) {
 			quickReply := linebot.NewQuickReplyItems(
 				linebot.NewQuickReplyButton("HEHE", nil),
 			)
-			bot.BotInstance.ReplyMessage(event.ReplyToken)
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
 				response := bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text).WithQuickReplies(quickReply))
