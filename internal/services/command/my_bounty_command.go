@@ -39,7 +39,6 @@ func (c *MyBountyCommand) Execute(ctx context.Context, event *linebot.Event) err
 		contents[index] = flexmessage.MapBountyToBubbleContainer(*bounty, true)
 	}
 
-	carousel := linebot.NewFlexMessage("test", &linebot.CarouselContainer{Contents: contents})
-	_, err = bot.GetInstance().ReplyMessage(event.ReplyToken, carousel).Do()
-	return err
+	carousel := linebot.NewFlexMessage(c.Name(), &linebot.CarouselContainer{Contents: contents})
+	return bot.ReplyMessageWithFlexMessage(event.ReplyToken, carousel)
 }

@@ -31,8 +31,7 @@ func (c *GetBountyCommand) Execute(ctx context.Context, event *linebot.Event) er
 	}
 
 	if len(bounties) == 0 {
-		_, err := bot.GetInstance().ReplyMessage(event.ReplyToken, linebot.NewTextMessage("No pet missing. Maybe next time.")).Do()
-		return err
+		return bot.ReplyMessageWithText(event.ReplyToken, "No pet missing. Maybe next time.")
 	}
 
 	contents := make([]*linebot.BubbleContainer, len(bounties))
@@ -41,6 +40,5 @@ func (c *GetBountyCommand) Execute(ctx context.Context, event *linebot.Event) er
 	}
 
 	carousel := linebot.NewFlexMessage(c.Name(), &linebot.CarouselContainer{Contents: contents})
-	_, err = bot.GetInstance().ReplyMessage(event.ReplyToken, carousel).Do()
-	return err
+	return bot.ReplyMessageWithFlexMessage(event.ReplyToken, carousel)
 }
