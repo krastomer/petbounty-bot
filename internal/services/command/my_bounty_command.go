@@ -9,20 +9,20 @@ import (
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 )
 
-type GetBountyCommand struct {
+type MyBountyCommand struct {
 	bountyRepo bounty.Repository
 }
 
-func NewGetBountyCommand(repo bounty.Repository) Command {
-	return &GetBountyCommand{bountyRepo: repo}
+func NewMyBountyCommand(repo bounty.Repository) Command {
+	return &MyBountyCommand{bountyRepo: repo}
 }
 
-func (c *GetBountyCommand) Name() string {
-	return "Get Bounty"
+func (c *MyBountyCommand) Name() string {
+	return "My Bounty"
 }
 
-func (c *GetBountyCommand) Execute(ctx context.Context, event *linebot.Event) {
-	bounties, err := c.bountyRepo.GetBounty(ctx)
+func (c *MyBountyCommand) Execute(ctx context.Context, event *linebot.Event) {
+	bounties, err := c.bountyRepo.GetBountyByUserID(ctx, event.Source.UserID)
 	if err != nil {
 		return
 	}
@@ -32,7 +32,7 @@ func (c *GetBountyCommand) Execute(ctx context.Context, event *linebot.Event) {
 
 	contents := make([]*linebot.BubbleContainer, len(bounties))
 	for index, bounty := range bounties {
-		contents[index] = flexmessage.MapBountyToBubbleContainer(*bounty, false)
+		contents[index] = flexmessage.MapBountyToBubbleContainer(*bounty, true)
 	}
 
 	carousel := linebot.NewFlexMessage("test", &linebot.CarouselContainer{Contents: contents})

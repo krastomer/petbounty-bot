@@ -13,17 +13,30 @@ type Service interface {
 }
 
 type service struct {
-	commands map[string]Command
-	// auditLog
+	commands           map[string]Command
+	errQuickReplyItems linebot.QuickReplyItems
+	previousState      map[string]string
 }
 
 func InitializeService(bountyRepo bounty.Repository) Service {
 	commands := make(map[string]Command)
 
-	bountyCmd := NewGetBountyCommand(bountyRepo)
-	commands[bountyCmd.Name()] = bountyCmd
+	getBountyCmd := NewGetBountyCommand(bountyRepo)
+	createBountyCmd := NewCreateBountyCommand(bountyRepo)
+	myBountyCmd := NewMyBountyCommand(bountyRepo)
 
-	return &service{commands: commands}
+	commands[getBountyCmd.Name()] = getBountyCmd
+	commands[createBountyCmd.Name()] = createBountyCmd
+	commands[myBountyCmd.Name()] = myBountyCmd
+
+	quickReplyButtons := make([]*linebot.QuickReplyButton, 0, len(commands))
+	for command := range commands {
+		quickReplyButtons = append(quickReplyButtons, linebot.NewQuickReplyButton("", linebot.NewMessageAction(command, command)))
+	}
+
+	errQuickReplyItems := *linebot.NewQuickReplyItems(quickReplyButtons...)
+
+	return &service{commands: commands, errQuickReplyItems: errQuickReplyItems, previousState: make(map[string]string)}
 }
 
 func (s *service) Execute(ctx context.Context, event *linebot.Event) {
@@ -36,19 +49,22 @@ func (s *service) Execute(ctx context.Context, event *linebot.Event) {
 		return
 	}
 
+	if val, ok := s.previousState[event.Source.UserID]; ok {
+		if val == "Create Bounty" {
+			command := s.commands["Create Bounty"]
+			ctx = context.WithValue(ctx, CreateBountyContext{}, true)
+			command.Execute(ctx, event)
+			s.previousState[event.Source.UserID] = "Created Bounty"
+			return
+		}
+	}
+
 	command := s.commands[text.Text]
 	if command == nil {
-		quickReplyItems := linebot.QuickReplyItems{
-			Items: []*linebot.QuickReplyButton{
-				linebot.NewQuickReplyButton("", &linebot.MessageAction{
-					Label: "Get Bounty",
-					Text:  "Get Bounty",
-				}),
-			},
-		}
-		bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("I don't understand what you say. Please type again").WithQuickReplies(&quickReplyItems)).Do()
+		bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("I don't understand what you say. Please type again").WithQuickReplies(&s.errQuickReplyItems)).Do()
 		return
 	}
 
 	command.Execute(ctx, event)
+	s.previousState[event.Source.UserID] = text.Text
 }

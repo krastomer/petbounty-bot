@@ -1,4 +1,4 @@
-package response
+package flexmessage
 
 import (
 	"fmt"
@@ -7,7 +7,44 @@ import (
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 )
 
-func MapBountyToFlexMessage(bounty bounty.Bounty) linebot.FlexContainer {
+func MapBountyToBubbleContainer(bounty bounty.Bounty, showButton bool) *linebot.BubbleContainer {
+	contents := []linebot.FlexComponent{
+		&linebot.TextComponent{
+			Type:    linebot.FlexComponentTypeText,
+			Text:    bounty.Name,
+			Size:    linebot.FlexTextSizeTypeXl,
+			Gravity: linebot.FlexComponentGravityTypeCenter,
+			Wrap:    true,
+			Weight:  linebot.FlexTextWeightTypeBold,
+		},
+		&linebot.TextComponent{
+			Type:    linebot.FlexComponentTypeText,
+			Text:    fmt.Sprintf("Reward: %.2f Baht", bounty.Reward),
+			Size:    linebot.FlexTextSizeTypeLg,
+			Gravity: linebot.FlexComponentGravityTypeCenter,
+			Color:   "#999999",
+		},
+		BulletComponent("Detail", bounty.Detail),
+		BulletComponent("Address", bounty.Address),
+		BulletComponent("Tel.", bounty.Telephone),
+		BulletComponent("Status", string(bounty.Status)),
+		&linebot.TextComponent{
+			Type:   linebot.FlexComponentTypeText,
+			Color:  "#AAAAAA",
+			Size:   linebot.FlexTextSizeTypeXs,
+			Margin: linebot.FlexComponentMarginTypeXxl,
+			Wrap:   true,
+			Text:   fmt.Sprintf("Broadcast at %v", bounty.CreatedAt),
+		},
+	}
+
+	if showButton {
+		contents = append(contents, &linebot.ButtonComponent{
+			Type:   linebot.FlexComponentTypeButton,
+			Action: linebot.NewMessageAction("Found", "Found"),
+		})
+	}
+
 	return &linebot.BubbleContainer{
 		Type:      linebot.FlexContainerTypeBubble,
 		Direction: linebot.FlexBubbleDirectionTypeLTR,
@@ -19,31 +56,10 @@ func MapBountyToFlexMessage(bounty bounty.Bounty) linebot.FlexContainer {
 			AspectMode:  linebot.FlexImageAspectModeTypeCover,
 		},
 		Body: &linebot.BoxComponent{
-			Type:   linebot.FlexComponentTypeBox,
-			Layout: linebot.FlexBoxLayoutTypeVertical,
-			Contents: []linebot.FlexComponent{
-				&linebot.TextComponent{
-					Type:    linebot.FlexComponentTypeText,
-					Text:    bounty.Name,
-					Size:    linebot.FlexTextSizeTypeXl,
-					Gravity: linebot.FlexComponentGravityTypeCenter,
-					Wrap:    true,
-					Weight:  linebot.FlexTextWeightTypeBold,
-				},
-				&linebot.TextComponent{
-					Type:    linebot.FlexComponentTypeText,
-					Text:    fmt.Sprintf("Reward: %.2f Baht", bounty.Reward),
-					Size:    linebot.FlexTextSizeTypeLg,
-					Gravity: linebot.FlexComponentGravityTypeCenter,
-					Color:   "#999999",
-				},
-				BulletComponent("Detail", bounty.Detail),
-				BulletComponent("Address", bounty.Address),
-				BulletComponent("Tel.", bounty.Telephone),
-				BulletComponent("Status", string(bounty.Status)),
-				&linebot.TextComponent{},
-			},
-			Spacing: linebot.FlexComponentSpacingTypeMd,
+			Type:     linebot.FlexComponentTypeBox,
+			Layout:   linebot.FlexBoxLayoutTypeVertical,
+			Contents: contents,
+			Spacing:  linebot.FlexComponentSpacingTypeMd,
 		},
 	}
 }
