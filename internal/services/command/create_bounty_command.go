@@ -12,6 +12,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+const CreateBountyName = "Create Bounty"
+
 type CreateBountyContext struct{}
 
 type CreateBountyCommand struct {
@@ -23,7 +25,7 @@ func NewCreateBountyCommand(repo bounty.Repository) Command {
 }
 
 func (c *CreateBountyCommand) Name() string {
-	return "Create Bounty"
+	return CreateBountyName
 }
 
 func (c *CreateBountyCommand) Execute(ctx context.Context, event *linebot.Event) error {

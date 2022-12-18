@@ -9,6 +9,8 @@ import (
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 )
 
+const MyBountyName = "My Bounty"
+
 type MyBountyCommand struct {
 	bountyRepo bounty.Repository
 }
@@ -18,7 +20,7 @@ func NewMyBountyCommand(repo bounty.Repository) Command {
 }
 
 func (c *MyBountyCommand) Name() string {
-	return "My Bounty"
+	return MyBountyName
 }
 
 func (c *MyBountyCommand) Execute(ctx context.Context, event *linebot.Event) error {

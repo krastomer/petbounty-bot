@@ -4,10 +4,13 @@ import (
 	"context"
 
 	"github.com/krastomer/petbounty-bot/internal/bot"
-	flexmessage "github.com/krastomer/petbounty-bot/internal/bot/flex_message"
 	"github.com/krastomer/petbounty-bot/internal/repositories/bounty"
 	"github.com/line/line-bot-sdk-go/v7/linebot"
+
+	flexmessage "github.com/krastomer/petbounty-bot/internal/bot/flex_message"
 )
+
+const GetBountyName = "Get Bounty"
 
 type GetBountyCommand struct {
 	bountyRepo bounty.Repository
@@ -18,7 +21,7 @@ func NewGetBountyCommand(repo bounty.Repository) Command {
 }
 
 func (c *GetBountyCommand) Name() string {
-	return "Get Bounty"
+	return GetBountyName
 }
 
 func (c *GetBountyCommand) Execute(ctx context.Context, event *linebot.Event) error {
