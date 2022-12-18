@@ -8,6 +8,7 @@ import (
 
 type bot struct {
 	*linebot.Client
+	quickReplyItems linebot.QuickReplyItems
 }
 
 var botInstance *bot
@@ -20,9 +21,27 @@ func InitializeBot() {
 		panic(err)
 	}
 
-	botInstance = &bot{client}
+	botInstance = &bot{client, linebot.QuickReplyItems{}}
 }
 
 func GetInstance() *bot {
 	return botInstance
+}
+
+func SetQuickReplyItems(items linebot.QuickReplyItems) {
+	botInstance.quickReplyItems = items
+}
+
+func ReplyMessageWithText(replyToken string, text string) error {
+	return replyMessageWithQuickReply(replyToken, linebot.NewTextMessage(text))
+}
+
+func ReplyMessageWithFlexMessage(replyToken string, message *linebot.FlexMessage) error {
+	return replyMessageWithQuickReply(replyToken, message)
+}
+
+func replyMessageWithQuickReply(replyToken string, message ...linebot.SendingMessage) error {
+	message[len(message)-1] = message[len(message)-1].WithQuickReplies(&botInstance.quickReplyItems)
+	_, err := botInstance.ReplyMessage(replyToken, message...).Do()
+	return err
 }

@@ -14,9 +14,8 @@ type Service interface {
 }
 
 type service struct {
-	commands           map[string]Command
-	errQuickReplyItems linebot.QuickReplyItems
-	previousState      map[string]string
+	commands      map[string]Command
+	previousState map[string]string
 }
 
 type Command interface {
@@ -40,9 +39,9 @@ func InitializeService(bountyRepo bounty.Repository) Service {
 		quickReplyButtons = append(quickReplyButtons, linebot.NewQuickReplyButton("", linebot.NewMessageAction(command, command)))
 	}
 
-	errQuickReplyItems := *linebot.NewQuickReplyItems(quickReplyButtons...)
+	bot.SetQuickReplyItems(*linebot.NewQuickReplyItems(quickReplyButtons...))
 
-	return &service{commands: commands, errQuickReplyItems: errQuickReplyItems, previousState: make(map[string]string)}
+	return &service{commands: commands, previousState: make(map[string]string)}
 }
 
 func (s *service) Execute(ctx context.Context, event *linebot.Event) {
@@ -67,7 +66,7 @@ func (s *service) Execute(ctx context.Context, event *linebot.Event) {
 
 	command := s.commands[text.Text]
 	if command == nil {
-		_, err := bot.GetInstance().ReplyMessage(event.ReplyToken, linebot.NewTextMessage("I don't understand what you say. Please type again").WithQuickReplies(&s.errQuickReplyItems)).Do()
+		err := bot.ReplyMessageWithText(event.ReplyToken, "I don't understand what you say. Please type again")
 		if err != nil {
 			fmt.Println(err)
 		}

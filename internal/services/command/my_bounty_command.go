@@ -30,7 +30,7 @@ func (c *MyBountyCommand) Execute(ctx context.Context, event *linebot.Event) err
 	}
 
 	if len(bounties) == 0 {
-		_, err := bot.GetInstance().ReplyMessage(event.ReplyToken, linebot.NewTextMessage("You never register bounty.")).Do()
+		err := bot.ReplyMessageWithText(event.ReplyToken, "You never register bounty.")
 		return err
 	}
 
