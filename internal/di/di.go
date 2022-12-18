@@ -2,18 +2,23 @@ package di
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/krastomer/petbounty-bot/internal/bot"
 	"github.com/krastomer/petbounty-bot/internal/handlers"
 	"github.com/krastomer/petbounty-bot/internal/repositories"
+	"github.com/krastomer/petbounty-bot/internal/repositories/bounty"
 )
 
 func InitializeContainer() *Container {
-	srv := gin.New()
-
-	handlers := handlers.InitializeHandlers()
-	handlers.RegisterRouter(srv)
+	bot.InitializeBot()
 
 	mongodb := repositories.InitializeRepositories()
-	_ = mongodb
+	database := mongodb.GetDatabase()
+	bountyRepo := bounty.ProvideRepository(database)
+
+	srv := gin.Default()
+
+	handlers := handlers.InitializeHandlers(bountyRepo)
+	handlers.RegisterRouter(srv)
 
 	return &Container{
 		srv: srv,

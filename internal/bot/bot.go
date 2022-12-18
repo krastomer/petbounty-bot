@@ -8,7 +8,7 @@ import (
 
 var BotInstance *linebot.Client
 
-func init() {
+func InitializeBot() {
 	token := os.Getenv("BOT_CHANNEL_TOKEN")
 	secret := os.Getenv("BOT_CHANNEL_SECRET")
 	client, err := linebot.New(secret, token)

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -12,7 +13,7 @@ type Repositories struct {
 }
 
 func InitializeRepositories() Repositories {
-	uri := "mongodb+srv://admin:AwesomePassword@cluster.d1xadz9.mongodb.net/?retryWrites=true&w=majority"
+	uri := os.Getenv("DATABASE_URI")
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
 		panic(err)
@@ -21,4 +22,8 @@ func InitializeRepositories() Repositories {
 	return Repositories{
 		client: client,
 	}
+}
+
+func (r *Repositories) GetDatabase() *mongo.Database {
+	return r.client.Database("petbounty-bot")
 }
