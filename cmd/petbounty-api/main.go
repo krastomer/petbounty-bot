@@ -1,14 +1,18 @@
 package main
 
 import (
+	"os"
+
 	"github.com/joho/godotenv"
 	"github.com/krastomer/petbounty-bot/internal/di"
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		panic(err)
+	if os.Getenv("ENV") != "production" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	contianer := di.InitializeContainer()
