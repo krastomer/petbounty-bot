@@ -19,7 +19,7 @@ type repository struct {
 	collection *mongo.Collection
 }
 
-func ProvideRepository(database *mongo.Database) Repository {
+func InitializeRepository(database *mongo.Database) Repository {
 	return &repository{
 		collection: database.Collection(collectionName),
 	}

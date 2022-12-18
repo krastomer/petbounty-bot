@@ -41,6 +41,7 @@ func MapBountyToFlexMessage(bounty bounty.Bounty) linebot.FlexContainer {
 				BulletComponent("Address", bounty.Address),
 				BulletComponent("Tel.", bounty.Telephone),
 				BulletComponent("Status", string(bounty.Status)),
+				&linebot.TextComponent{},
 			},
 			Spacing: linebot.FlexComponentSpacingTypeMd,
 		},

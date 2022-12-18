@@ -6,6 +6,7 @@ import (
 	"github.com/krastomer/petbounty-bot/internal/handlers"
 	"github.com/krastomer/petbounty-bot/internal/repositories"
 	"github.com/krastomer/petbounty-bot/internal/repositories/bounty"
+	"github.com/krastomer/petbounty-bot/internal/services/command"
 )
 
 func InitializeContainer() *Container {
@@ -13,11 +14,13 @@ func InitializeContainer() *Container {
 
 	mongodb := repositories.InitializeRepositories()
 	database := mongodb.GetDatabase()
-	bountyRepo := bounty.ProvideRepository(database)
+	bountyRepo := bounty.InitializeRepository(database)
 
 	srv := gin.Default()
 
-	handlers := handlers.InitializeHandlers(bountyRepo)
+	commandSvc := command.InitializeService(bountyRepo)
+
+	handlers := handlers.InitializeHandlers(commandSvc)
 	handlers.RegisterRouter(srv)
 
 	return &Container{
