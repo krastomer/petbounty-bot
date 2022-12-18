@@ -7,11 +7,11 @@ import (
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 )
 
-func MapBountyToBubbleContainer(bounty bounty.Bounty, showButton bool) *linebot.BubbleContainer {
+func MapBountyToBubbleContainer(in bounty.Bounty, showButton bool) *linebot.BubbleContainer {
 	contents := []linebot.FlexComponent{
 		&linebot.TextComponent{
 			Type:    linebot.FlexComponentTypeText,
-			Text:    bounty.Name,
+			Text:    in.Name,
 			Size:    linebot.FlexTextSizeTypeXl,
 			Gravity: linebot.FlexComponentGravityTypeCenter,
 			Wrap:    true,
@@ -19,29 +19,29 @@ func MapBountyToBubbleContainer(bounty bounty.Bounty, showButton bool) *linebot.
 		},
 		&linebot.TextComponent{
 			Type:    linebot.FlexComponentTypeText,
-			Text:    fmt.Sprintf("Reward: %.2f Baht", bounty.Reward),
+			Text:    fmt.Sprintf("Reward: %.2f Baht", in.Reward),
 			Size:    linebot.FlexTextSizeTypeLg,
 			Gravity: linebot.FlexComponentGravityTypeCenter,
 			Color:   "#999999",
 		},
-		BulletComponent("Detail", bounty.Detail),
-		BulletComponent("Address", bounty.Address),
-		BulletComponent("Tel.", bounty.Telephone),
-		BulletComponent("Status", string(bounty.Status)),
+		BulletComponent("Detail", in.Detail),
+		BulletComponent("Address", in.Address),
+		BulletComponent("Tel.", in.Telephone),
+		BulletComponent("Status", string(in.Status)),
 		&linebot.TextComponent{
 			Type:   linebot.FlexComponentTypeText,
 			Color:  "#AAAAAA",
 			Size:   linebot.FlexTextSizeTypeXs,
 			Margin: linebot.FlexComponentMarginTypeXxl,
 			Wrap:   true,
-			Text:   fmt.Sprintf("Broadcast at %v", bounty.CreatedAt),
+			Text:   fmt.Sprintf("Broadcast at %v", in.CreatedAt),
 		},
 	}
 
-	if showButton {
+	if showButton && in.Status != bounty.Founded {
 		contents = append(contents, &linebot.ButtonComponent{
 			Type:   linebot.FlexComponentTypeButton,
-			Action: linebot.NewMessageAction("Found", "Found"),
+			Action: linebot.NewPostbackAction("Found", fmt.Sprintf("found=%v", in.ID.Hex()), "", "", "", ""),
 		})
 	}
 

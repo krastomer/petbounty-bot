@@ -25,7 +25,7 @@ func (c *GetBountyCommand) Name() string {
 }
 
 func (c *GetBountyCommand) Execute(ctx context.Context, event *linebot.Event) error {
-	bounties, err := c.bountyRepo.GetBounty(ctx)
+	bounties, err := c.bountyRepo.GetBounties(ctx)
 	if err != nil {
 		return err
 	}

@@ -2,17 +2,20 @@ package bounty
 
 import (
 	"context"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const collectionName = "bounty"
 
 type Repository interface {
-	GetBounty(ctx context.Context) ([]*Bounty, error)
+	GetBounties(ctx context.Context) ([]*Bounty, error)
 	CreateBounty(ctx context.Context, bounty Bounty) error
 	GetBountyByUserID(ctx context.Context, userID string) ([]*Bounty, error)
+	UpdateStatusBountyByID(ctx context.Context, id string, status BountyStatus) error
 }
 
 type repository struct {
@@ -25,7 +28,7 @@ func InitializeRepository(database *mongo.Database) Repository {
 	}
 }
 
-func (r *repository) GetBounty(ctx context.Context) ([]*Bounty, error) {
+func (r *repository) GetBounties(ctx context.Context) ([]*Bounty, error) {
 	filter := bson.M{}
 
 	cur, err := r.collection.Find(ctx, filter)
@@ -61,4 +64,17 @@ func (r *repository) GetBountyByUserID(ctx context.Context, userID string) ([]*B
 	}
 
 	return bounties, nil
+}
+
+func (r *repository) UpdateStatusBountyByID(ctx context.Context, id string, status BountyStatus) error {
+	primitiveID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	update := bson.D{{"$set", bson.D{{"status", status}}}}
+	_, err = r.collection.UpdateByID(ctx, primitiveID, update)
+	fmt.Println("hit")
+	fmt.Println(err)
+	return err
 }
