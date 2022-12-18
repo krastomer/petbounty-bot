@@ -21,13 +21,15 @@ func (c *MyBountyCommand) Name() string {
 	return "My Bounty"
 }
 
-func (c *MyBountyCommand) Execute(ctx context.Context, event *linebot.Event) {
+func (c *MyBountyCommand) Execute(ctx context.Context, event *linebot.Event) error {
 	bounties, err := c.bountyRepo.GetBountyByUserID(ctx, event.Source.UserID)
 	if err != nil {
-		return
+		return err
 	}
+
 	if len(bounties) == 0 {
-		return
+		_, err := bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("You never register bounty.")).Do()
+		return err
 	}
 
 	contents := make([]*linebot.BubbleContainer, len(bounties))
@@ -36,5 +38,6 @@ func (c *MyBountyCommand) Execute(ctx context.Context, event *linebot.Event) {
 	}
 
 	carousel := linebot.NewFlexMessage("test", &linebot.CarouselContainer{Contents: contents})
-	bot.BotInstance.ReplyMessage(event.ReplyToken, carousel).Do()
+	_, err = bot.BotInstance.ReplyMessage(event.ReplyToken, carousel).Do()
+	return err
 }

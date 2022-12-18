@@ -21,13 +21,15 @@ func (c *GetBountyCommand) Name() string {
 	return "Get Bounty"
 }
 
-func (c *GetBountyCommand) Execute(ctx context.Context, event *linebot.Event) {
+func (c *GetBountyCommand) Execute(ctx context.Context, event *linebot.Event) error {
 	bounties, err := c.bountyRepo.GetBounty(ctx)
 	if err != nil {
-		return
+		return err
 	}
+
 	if len(bounties) == 0 {
-		return
+		_, err := bot.BotInstance.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("No pet missing. Maybe next time.")).Do()
+		return err
 	}
 
 	contents := make([]*linebot.BubbleContainer, len(bounties))
@@ -35,6 +37,7 @@ func (c *GetBountyCommand) Execute(ctx context.Context, event *linebot.Event) {
 		contents[index] = flexmessage.MapBountyToBubbleContainer(*bounty, false)
 	}
 
-	carousel := linebot.NewFlexMessage("test", &linebot.CarouselContainer{Contents: contents})
-	bot.BotInstance.ReplyMessage(event.ReplyToken, carousel).Do()
+	carousel := linebot.NewFlexMessage(c.Name(), &linebot.CarouselContainer{Contents: contents})
+	_, err = bot.BotInstance.ReplyMessage(event.ReplyToken, carousel).Do()
+	return err
 }

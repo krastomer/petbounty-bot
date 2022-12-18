@@ -2,7 +2,6 @@ package command
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -27,49 +26,45 @@ func (c *CreateBountyCommand) Name() string {
 	return "Create Bounty"
 }
 
-func (c *CreateBountyCommand) Execute(ctx context.Context, event *linebot.Event) {
+func (c *CreateBountyCommand) Execute(ctx context.Context, event *linebot.Event) error {
 	if ctx.Value(CreateBountyContext{}) == true {
 		text, _ := event.Message.(*linebot.TextMessage)
 		rawData := text.Text
 		lines := strings.Split(rawData, "\n")
 
 		if len(lines) != 5 {
-			return
+			return ErrBadRequest
 		}
 		reward, err := strconv.ParseFloat(trimTitleAndSpace(lines[1]), 64)
 		if err != nil {
-			return
+			return ErrBadRequest
 		}
 
-		newBounty := bounty.Bounty{}
-		newBounty.ID = primitive.NewObjectID()
-		newBounty.UserID = event.Source.UserID
-		newBounty.Name = trimTitleAndSpace(lines[0])
-		newBounty.Reward = reward
-		newBounty.Detail = trimTitleAndSpace(lines[2])
-		newBounty.Address = trimTitleAndSpace(lines[3])
-		newBounty.Telephone = trimTitleAndSpace(lines[4])
-		newBounty.CreatedAt = time.Now()
-		newBounty.Status = bounty.Missing
+		newBounty := bounty.Bounty{
+			ID:        primitive.NewObjectID(),
+			UserID:    event.Source.UserID,
+			Name:      trimTitleAndSpace(lines[0]),
+			Reward:    reward,
+			Detail:    trimTitleAndSpace(lines[2]),
+			Address:   trimTitleAndSpace(lines[3]),
+			Telephone: trimTitleAndSpace(lines[4]),
+			CreatedAt: time.Now(),
+			Status:    bounty.Missing,
+		}
 		err = c.bountyRepo.CreateBounty(ctx, newBounty)
 		if err != nil {
-			fmt.Println(err)
-			return
+			return err
 		}
-		res, err := bot.BotInstance.BroadcastMessage(linebot.NewTextMessage("แมวบักเจดหาย")).Do()
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(res)
-		return
+		_, err = bot.BotInstance.BroadcastMessage(linebot.NewTextMessage("แมวบักเจดหาย")).Do()
+		return err
 	}
 
-	bot.BotInstance.ReplyMessage(
+	_, err := bot.BotInstance.ReplyMessage(
 		event.ReplyToken,
 		linebot.NewTextMessage("Please Fill you're pet information\nCopy Next Message and fill"),
 		linebot.NewTextMessage("Name: \nReward: \nDetail: \nAddress: \nTelephone: "),
 	).Do()
-
+	return err
 }
 
 func trimTitleAndSpace(in string) string {

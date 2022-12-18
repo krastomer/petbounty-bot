@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/krastomer/petbounty-bot/internal/bot"
 	"github.com/krastomer/petbounty-bot/internal/repositories/bounty"
@@ -16,6 +17,11 @@ type service struct {
 	commands           map[string]Command
 	errQuickReplyItems linebot.QuickReplyItems
 	previousState      map[string]string
+}
+
+type Command interface {
+	Name() string
+	Execute(ctx context.Context, event *linebot.Event) error
 }
 
 func InitializeService(bountyRepo bounty.Repository) Service {
@@ -65,6 +71,9 @@ func (s *service) Execute(ctx context.Context, event *linebot.Event) {
 		return
 	}
 
-	command.Execute(ctx, event)
-	s.previousState[event.Source.UserID] = text.Text
+	err := command.Execute(ctx, event)
+	if err != nil {
+		fmt.Println(err)
+	}
+	s.previousState[event.Source.UserID] = command.Name()
 }
