@@ -2,11 +2,11 @@ package bounty
 
 import (
 	"context"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const collectionName = "bounty"
@@ -30,6 +30,7 @@ func InitializeRepository(database *mongo.Database) Repository {
 
 func (r *repository) GetBounties(ctx context.Context) ([]*Bounty, error) {
 	filter := bson.M{}
+	filter["status"] = Missing
 
 	cur, err := r.collection.Find(ctx, filter)
 	if err != nil {
@@ -52,8 +53,10 @@ func (r *repository) CreateBounty(ctx context.Context, bounty Bounty) error {
 func (r *repository) GetBountyByUserID(ctx context.Context, userID string) ([]*Bounty, error) {
 	filter := bson.M{}
 	filter["user_id"] = userID
+	opts := options.FindOptions{}
+	opts.SetSort(bson.M{"status": -1})
 
-	cur, err := r.collection.Find(ctx, filter)
+	cur, err := r.collection.Find(ctx, filter, &opts)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +80,5 @@ func (r *repository) UpdateStatusBountyByID(ctx context.Context, id string, stat
 		"status": status,
 	}
 	_, err = r.collection.UpdateByID(ctx, primitiveID, update)
-	fmt.Println("hit")
-	fmt.Println(err)
 	return err
 }
