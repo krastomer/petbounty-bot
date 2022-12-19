@@ -70,5 +70,5 @@ func (c *CreateBountyCommand) Execute(ctx context.Context, event *linebot.Event)
 }
 
 func trimTitleAndSpace(in string) string {
-	return strings.TrimSpace(strings.Split(in, ":")[1])
+	return strings.TrimSpace(strings.SplitN(in, ":", 2)[1])
 }
