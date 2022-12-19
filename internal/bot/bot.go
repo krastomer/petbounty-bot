@@ -32,6 +32,10 @@ func SetQuickReplyItems(items linebot.QuickReplyItems) {
 	botInstance.quickReplyItems = items
 }
 
+func GetQuickReplyItems() *linebot.QuickReplyItems {
+	return &botInstance.quickReplyItems
+}
+
 func ReplyMessageWithText(replyToken string, text string) error {
 	return replyMessageWithQuickReply(replyToken, linebot.NewTextMessage(text))
 }

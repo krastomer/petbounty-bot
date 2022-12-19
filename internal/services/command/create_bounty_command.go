@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/krastomer/petbounty-bot/internal/bot"
+	flexmessage "github.com/krastomer/petbounty-bot/internal/bot/flex_message"
 	"github.com/krastomer/petbounty-bot/internal/repositories/bounty"
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -57,7 +58,7 @@ func (c *CreateBountyCommand) Execute(ctx context.Context, event *linebot.Event)
 		if err != nil {
 			return err
 		}
-		_, err = bot.GetInstance().BroadcastMessage(linebot.NewTextMessage("แมวบักเจดหาย")).Do()
+		_, err = bot.GetInstance().BroadcastMessage(linebot.NewTextMessage("New Bounty Active"), linebot.NewFlexMessage(c.Name(), flexmessage.MapBountyToBubbleContainer(newBounty, false)).WithQuickReplies(bot.GetQuickReplyItems())).Do()
 		return err
 	}
 
